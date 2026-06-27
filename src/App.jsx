@@ -20,6 +20,7 @@ const App = () => {
   const [branchIndex, setBranchIndex] = useState(0);
   const [platformViewed, setPlatformViewed] = useState(false);
   const [showPlatformScreen, setShowPlatformScreen] = useState(false);
+  const [isIncorrectChoice, setIsIncorrectChoice] = useState(false);
 
   // Restart the game
   const resetGame = () => {
@@ -33,6 +34,7 @@ const App = () => {
       setBranchIndex(0);
       setPlatformViewed(false);
       setShowPlatformScreen(false);
+      setIsIncorrectChoice(false);
     }
   };
 
@@ -59,7 +61,12 @@ const App = () => {
       } else {
         // Branching dialog finished, proceed to mini-game/next phase
         setActiveBranch(null);
-        startNextPhase();
+        if (isIncorrectChoice) {
+          setIsIncorrectChoice(false);
+          alert("協商失敗！王老闆拂袖而去，居民與學生也無法認同。請重新商討一個更具包容性的折衷方案！");
+        } else {
+          startNextPhase();
+        }
       }
     } else {
       // Main branch dialogues
@@ -81,6 +88,11 @@ const App = () => {
 
   // Branching Choice Selection
   const handleChoiceSelect = (option) => {
+    if (option.isIncorrect) {
+      setIsIncorrectChoice(true);
+    } else {
+      setIsIncorrectChoice(false);
+    }
     setActiveBranch(option.nextDialog);
     setBranchIndex(0);
   };
@@ -310,7 +322,7 @@ const App = () => {
               speaker={activeSpeakerText.speaker}
               text={activeSpeakerText.text}
               onNext={handleNextDialogue}
-              choices={isDialogueFinished() ? currentChapter.choice : null}
+              choices={isDialogueFinished() && (currentChapterId !== 2 || platformViewed) ? currentChapter.choice : null}
               onChoiceSelect={handleChoiceSelect}
             />
           )}

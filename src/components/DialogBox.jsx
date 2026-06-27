@@ -4,26 +4,37 @@ import { ArrowRight } from 'lucide-react';
 const DialogBox = ({ speaker, text, onNext, choices, onChoiceSelect }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
+  const timerRef = React.useRef(null);
 
   useEffect(() => {
     setDisplayedText('');
     setIsTyping(true);
     let index = 0;
-    const interval = setInterval(() => {
+
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    timerRef.current = setInterval(() => {
       setDisplayedText((prev) => prev + text.charAt(index));
       index++;
       if (index >= text.length) {
-        clearInterval(interval);
+        clearInterval(timerRef.current);
+        timerRef.current = null;
         setIsTyping(false);
       }
     }, 25); // Typing speed
 
-    return () => clearInterval(interval);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [text]);
 
   const handleBoxClick = () => {
     if (isTyping) {
-      // Instantly finish typing
+      // Instantly finish typing and clear interval
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       setDisplayedText(text);
       setIsTyping(false);
     } else if (!choices && onNext) {

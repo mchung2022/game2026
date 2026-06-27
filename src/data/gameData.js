@@ -265,6 +265,7 @@ export const STORY_DATA = {
       options: [
         {
           text: "方案 A：堅持全段鋪設人行道，禁止所有車輛臨時停車，店家必須自行克服困難。",
+          isIncorrect: true,
           nextDialog: [
             {
               speaker: CHARACTERS.shopkeeper,
